@@ -132,7 +132,10 @@ export const approveLatestIssue = async (): Promise<void> => {
 
 export const forcePublishBypass = async (): Promise<void> => {
   const issue = await prisma.issue.findFirst({
-    where: { status: { in: [IssueStatus.BLOCKED, IssueStatus.PENDING_APPROVAL] } },
+    where: {
+      status: { in: [IssueStatus.BLOCKED, IssueStatus.PENDING_APPROVAL] },
+      beehiivDraftId: { not: null }
+    },
     orderBy: { createdAt: "desc" }
   });
   if (!issue?.beehiivDraftId) {
