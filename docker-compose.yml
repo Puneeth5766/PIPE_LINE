@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: founders_edge_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: founders_edge
+      POSTGRES_PASSWORD: founders_edge
+      POSTGRES_DB: founders_edge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

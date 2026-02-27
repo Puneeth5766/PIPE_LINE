@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IssueStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  SCHEDULED
+  BLOCKED
+  FAILED
+  PUBLISHED
+}
+
+model Issue {
+  id                  String        @id @default(cuid())
+  issueDate           DateTime
+  title               String
+  markdown            String
+  status              IssueStatus    @default(DRAFT)
+  evaluatorScore      Float?
+  similarityScore     Float?
+  beehiivDraftId      String?
+  approvedAt          DateTime?
+  scheduledAt         DateTime?
+  sourceSnapshot      Json
+  metadata            Json
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  agentOutputs        AgentOutput[]
+  vectorMemories      VectorMemory[]
+
+  @@index([issueDate])
+  @@index([status])
+}
+
+model SourceItem {
+  id           String   @id @default(cuid())
+  source       String
+  sourceType   String
+  externalId   String
+  title        String
+  url          String
+  author       String?
+  summary      String?
+  score        Int?
+  comments     Json
+  metadata     Json
+  rawPayload   Json
+  publishedAt  DateTime?
+  createdAt    DateTime @default(now())
+
+  @@unique([source, externalId])
+  @@index([source, sourceType])
+}
+
+model AgentOutput {
+  id             String   @id @default(cuid())
+  issueId        String
+  agentName      String
+  prompt         Json
+  inputJson      Json
+  outputJson     Json
+  tokenUsage     Json
+  createdAt      DateTime @default(now())
+  issue          Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([issueId, agentName])
+}
+
+model VectorMemory {
+  id          String   @id @default(cuid())
+  issueId     String
+  contentHash String   @unique
+  embedding   Unsupported("vector")
+  createdAt   DateTime @default(now())
+  issue       Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([issueId])
+}

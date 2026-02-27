@@ -1,0 +1,9 @@
+{
+  "ai_provider": "openai",
+  "model": "gpt-4o-mini",
+  "embedding_model": "text-embedding-3-small",
+  "similarity_threshold": 0.9,
+  "evaluation_min_score": 7,
+  "publish_time": "0 8 * * 3",
+  "regeneration_limit": 1
+}
